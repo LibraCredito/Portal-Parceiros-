@@ -6423,8 +6423,8 @@ ${uploadData.data.erros.length > 0 ? `\n❌ Erros:\n${uploadData.data.erros.map(
       // ===== ENVIO PARA O PLOOMES =====
       // Enviar para o backend primeiro para obter o formLink
 
-      // https://ploomes-api.vercel.app/cadastro/offline/env
-      const response = await fetch('http://localhost:3063/cadastro/offline/env', {
+      // https://portal-parceiros-api.vercel.app/cadastro/offline/env
+      const response = await fetch('https://portal-parceiros-api.vercel.app/cadastro/offline/env', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
