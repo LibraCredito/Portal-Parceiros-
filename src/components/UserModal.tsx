@@ -40,7 +40,11 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, user, onSave, on
   const { toast } = useToast();
 
   // Hook para buscar opções do Ploomes
-  const { options: ploomesOptions, loading: loadingOptions } = usePloomesOptions(CADASTRO_USUARIO_OPTIONS_ID);
+  // skipCache: true para sempre recarregar os dados quando o modal abrir
+  const { options: ploomesOptions, loading: loadingOptions } = usePloomesOptions(
+    isOpen ? CADASTRO_USUARIO_OPTIONS_ID : undefined,
+    isOpen // Quando o modal está aberto, skipCache = true para recarregar dados
+  );
 
   // Função para buscar o grupo do coordenador atual
   const fetchCurrentUserGroup = async () => {
