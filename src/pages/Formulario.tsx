@@ -1629,17 +1629,17 @@ const Formulario: React.FC = () => {
         }
         
         // Validação adicional para Empresário(a) (Pessoa Física)
-        if (isEmpresario) {
-          if (!validarCampoVazio(tomador.cnpj)) {
-            return false;
-          }
-          if (!validarCampoVazio(tomador.ramoPJ)) {
-            return false;
-          }
-          if (!validarMinimoCaracteres(tomador.ramoPJ)) {
-            return false;
-          }
-        }
+        // if (isEmpresario) {
+        //   if (!validarCampoVazio(tomador.cnpj)) {
+        //     return false;
+        //   }
+        //   if (!validarCampoVazio(tomador.ramoPJ)) {
+        //     return false;
+        //   }
+        //   if (!validarMinimoCaracteres(tomador.ramoPJ)) {
+        //     return false;
+        //   }
+        // }
       }
       
       // Comprovação de renda informal é obrigatória para todos
@@ -1911,20 +1911,21 @@ const Formulario: React.FC = () => {
         erros.cpf = 'CPF inválido';
       }
       
-      // Validação adicional para Empresário(a) (Pessoa Física)
-      if (tomador.qualificacaoProfissional?.Name?.toLowerCase() === 'empresário(a)') {
-        if (!validarCampoVazio(tomador.cnpj)) {
-          erros.cnpj = 'CNPJ é obrigatório para empresário(a)';
-        } else if (!validarCNPJ(tomador.cnpj)) {
-          erros.cnpj = 'CNPJ inválido';
-        }
+      // Validação adicional para Empresário(a) (Pessoa Física) -> Validação para empresário(a) foi removida
+      // if (tomador.qualificacaoProfissional?.Name?.toLowerCase() === 'empresário(a)') {
+      //   if (!validarCampoVazio(tomador.cnpj)) {
+      //     erros.cnpj = 'CNPJ é obrigatório para empresário(a)';
+      //   } else if (!validarCNPJ(tomador.cnpj)) {
+      //     erros.cnpj = 'CNPJ inválido';
+      //   }
         
-        if (!validarCampoVazio(tomador.ramoPJ)) {
-          erros.ramoPJ = 'Ramo da empresa é obrigatório para empresário(a)';
-        } else if (!validarMinimoCaracteres(tomador.ramoPJ)) {
-          erros.ramoPJ = 'Ramo da empresa deve ter pelo menos 3 caracteres';
-        }
-      }
+      //   if (!validarCampoVazio(tomador.ramoPJ)) {
+      //     erros.ramoPJ = 'Ramo da empresa é obrigatório para empresário(a)';
+      //   } else if (!validarMinimoCaracteres(tomador.ramoPJ)) {
+      //     erros.ramoPJ = 'Ramo da empresa deve ter pelo menos 3 caracteres';
+      //   }
+      // }
+
     } else if (tomador.tipoPessoa?.Name?.toLowerCase() === 'pessoa jurídica') {
       if (!validarCampoVazio(tomador.cnpj)) {
         erros.cnpj = 'CNPJ é obrigatório';
