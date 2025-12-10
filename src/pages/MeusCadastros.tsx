@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Calendar, User, Building2, FileText, Filter, RefreshCw } from 'lucide-react';
+import { ExternalLink, Calendar, User, Building2, FileText, Filter, RefreshCw, Edit2, Save, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -59,6 +59,11 @@ const MeusCadastros: React.FC = () => {
   // Estados para filtro de datas
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  
+  // Estados para edição de nome
+  const [editingProposalId, setEditingProposalId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState<string>('');
+  const [isUpdatingName, setIsUpdatingName] = useState(false);
 
   // Buscar usuários do grupo (apenas para coordenadores)
   const fetchGroupUsers = async () => {
@@ -341,6 +346,135 @@ const MeusCadastros: React.FC = () => {
     setEndDate('');
   };
 
+  // Função para iniciar edição do nome
+  const handleStartEdit = (proposal: RegisterProposal) => {
+    setEditingProposalId(proposal.id);
+    setEditingName(proposal.nome);
+  };
+
+  // Função para cancelar edição
+  const handleCancelEdit = () => {
+    setEditingProposalId(null);
+    setEditingName('');
+  };
+
+  // Função para salvar nome editado
+  const handleSaveName = async (proposalId: string) => {
+    if (!editingName.trim()) {
+      toast({
+        title: "Erro",
+        description: "O nome não pode estar vazio",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Verificar se o usuário tem permissão para editar este registro
+    const proposal = proposals.find(p => p.id === proposalId);
+    if (!proposal) {
+      toast({
+        title: "Erro",
+        description: "Registro não encontrado",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Verificar permissões: usuário só pode editar seus próprios registros
+    // Coordenador pode editar registros do seu grupo
+    // Admin pode editar todos
+    if (profile?.role === 'usuario' && proposal.user_id !== profile?.id) {
+      toast({
+        title: "Erro",
+        description: "Você não tem permissão para editar este registro",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (profile?.role === 'coordenador' && proposal.group_id !== profile?.group_id) {
+      toast({
+        title: "Erro",
+        description: "Você não tem permissão para editar este registro",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpdatingName(true);
+    try {
+      console.log('Atualizando nome:', { proposalId, novoNome: editingName.trim() });
+      
+      // Atualizar no Supabase com select para verificar se foi atualizado
+      const { data, error } = await supabase
+        .from('register_proposal')
+        .update({ nome: editingName.trim() })
+        .eq('id', proposalId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Erro do Supabase ao atualizar nome:', error);
+        console.error('Detalhes do erro:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+
+      // Verificar se os dados foram retornados (confirma que a atualização foi bem-sucedida)
+      if (!data) {
+        console.error('Nenhum dado retornado após atualização');
+        throw new Error('A atualização não foi confirmada pelo banco de dados');
+      }
+
+      if (data.nome !== editingName.trim()) {
+        console.error('Nome não corresponde:', { esperado: editingName.trim(), recebido: data.nome });
+        throw new Error('A atualização não foi confirmada pelo banco de dados');
+      }
+
+      console.log('Nome atualizado com sucesso:', data);
+
+      // Atualizar o estado local
+      setProposals(prevProposals =>
+        prevProposals.map(proposal =>
+          proposal.id === proposalId
+            ? { ...proposal, nome: editingName.trim() }
+            : proposal
+        )
+      );
+
+      setFilteredProposals(prevFiltered =>
+        prevFiltered.map(proposal =>
+          proposal.id === proposalId
+            ? { ...proposal, nome: editingName.trim() }
+            : proposal
+        )
+      );
+
+      toast({
+        title: "Sucesso",
+        description: "Nome atualizado com sucesso",
+      });
+
+      setEditingProposalId(null);
+      setEditingName('');
+    } catch (error: any) {
+      console.error('Erro completo ao atualizar nome:', error);
+      const errorMessage = error.message || error.details || error.hint || "Erro ao atualizar nome. Verifique as permissões do banco de dados (RLS).";
+      toast({
+        title: "Erro ao atualizar",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 8000,
+      });
+    } finally {
+      setIsUpdatingName(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -499,10 +633,61 @@ const MeusCadastros: React.FC = () => {
                 className="hover:shadow-lg transition-shadow"
               >
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
-                      {proposal.nome}
-                    </CardTitle>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      {editingProposalId === proposal.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editingName}
+                            onChange={(e) => setEditingName(e.target.value)}
+                            className="flex-1 px-2 py-1 text-lg font-semibold text-gray-900 border border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            autoFocus
+                            disabled={isUpdatingName}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSaveName(proposal.id);
+                              } else if (e.key === 'Escape') {
+                                handleCancelEdit();
+                              }
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleSaveName(proposal.id)}
+                            disabled={isUpdatingName}
+                            className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleCancelEdit}
+                            disabled={isUpdatingName}
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 group">
+                          <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
+                            {proposal.nome}
+                          </CardTitle>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleStartEdit(proposal)}
+                            className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                            title="Editar nome"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                     <Badge variant={getTypePeopleBadgeVariant(proposal.type_people)}>
                       {getTypePeopleLabel(proposal.type_people)}
                     </Badge>

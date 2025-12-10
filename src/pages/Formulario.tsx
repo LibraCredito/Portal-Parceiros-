@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePloomesOptions, clearExpiredCache, clearAllPloomesCache, getCacheInfo } from '@/hooks/usePloomesOptions';
 import { useIBGECities } from '@/hooks/useIBGECities';
 import { useDynamicLTV } from '@/hooks/useDynamicLTV';
@@ -291,6 +292,7 @@ interface DocumentoHoleriteExtrato {
 
 const Formulario: React.FC = () => {
   const { profile } = useAuth();
+  const navigate = useNavigate();
   
   // Inicializar IndexedDB ao montar o componente
   useEffect(() => {
@@ -3065,43 +3067,7 @@ const Formulario: React.FC = () => {
            <fieldset className="border border-blue-200 rounded-xl p-4 mb-4">
             <legend className="text-blue-900 font-semibold px-2">Informações da PJ</legend>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {tomador.tipoPessoa?.Name?.toLowerCase() === 'pessoa física' ? (
-                <>
-                  {/* Campos adicionais para Empresário (Pessoa Física) */}
-                  {tomador.qualificacaoProfissional?.Name?.toLowerCase() === 'empresário(a)' ? (
-                    <>
-                      <InputText
-                        inputName="CNPJ"
-                        termo={tomador.cnpj}
-                        onSetName={v => {
-                          limparErro('cnpj');
-                          setTomadores(prev => { const novo = [...prev]; novo[idx] = { ...novo[idx], cnpj: v }; return novo; });
-                        }}
-                        placeholder="Digite o CNPJ da empresa"
-                        typeInput="Cnpj"
-                        error={erros.cnpj}
-                        tooltip="Digite o CNPJ da empresa (apenas números ou com pontos, barra e traços)"
-                      />
-                      <InputText
-                        inputName="Digite qual o Ramo da PJ"
-                        termo={tomador.ramoPJ}
-                        onSetName={v => {
-                          limparErro('ramoPJ');
-                          setTomadores(prev => { const novo = [...prev]; novo[idx] = { ...novo[idx], ramoPJ: v }; return novo; });
-                        }}
-                        placeholder="Informe o ramo da empresa"
-                        typeInput="Text"
-                        error={erros.ramoPJ}
-                        tooltip="Digite o ramo de atividade da empresa (ex: comércio, indústria, serviços)"
-                      />
-                    </>
-                  ) : (
-                    <div className="border border-blue-200 text-blue-900 rounded-lg p-4 text-center w-full">
-                      Caso seja Empresário, selecione a qualificação profissional Empresário para exibir os campos de informações da PJ.
-                    </div>
-                  )}
-                </>
-              ) : tomador.tipoPessoa?.Name?.toLowerCase() === 'pessoa jurídica' ? (
+              { tomador.tipoPessoa?.Name?.toLowerCase() === 'pessoa jurídica' ? (
                 <>
                   {quantidadeSociosOptions?.loading ? (
                     <div className="flex flex-col w-full">
@@ -3236,10 +3202,10 @@ const Formulario: React.FC = () => {
                       return novo;
                     });
                   }}
-                  label="Possui uma PJ vinculada ao seu nome?"
+                  label="Possui uma PJ vinculada ao nome do tomador?"
                   placeholder="Selecione uma opção"
                   error={erros.possuiPJVinculada}
-                  tooltip="Informe se você possui uma Pessoa Jurídica vinculada ao seu nome"
+                  tooltip="Informe se você possui uma Pessoa Jurídica vinculada ao nome do tomador"
                 />
                 
                 {/* Pergunta sobre composição de renda - só aparece se responder "Sim" */}
@@ -6424,7 +6390,7 @@ ${uploadData.data.erros.length > 0 ? `\n❌ Erros:\n${uploadData.data.erros.map(
       // Enviar para o backend primeiro para obter o formLink
 
       // https://portal-parceiros-api.vercel.app/cadastro/offline/env
-      const response = await fetch('https://portal-parceiros-api.vercel.app/cadastro/offline/env', {
+      const response = await fetch('http://localhost:3063/cadastro/offline/env', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -6657,24 +6623,42 @@ ${uploadData.data.erros.length > 0 ? `\n❌ Erros:\n${uploadData.data.erros.map(
               </div>
             </div>
 
-            {/* Botão de fechar */}
-            <button
-              onClick={() => {
-                setShowSuccessModal(false);
-                setSuccessData(null);
-                if (isSuccess) {
-                  // Se foi sucesso, limpar todos os dados do formulário e voltar para etapa inicial
-                  limparTodosOsDados();
-                }
-              }}
-              className={`w-full py-3 px-6 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 ${
-                isSuccess
-                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700'
-                  : 'bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700'
-              }`}
-            >
-              {isSuccess ? 'Novo Cadastro' : 'Tentar Novamente'}
-            </button>
+            {/* Botões de ação */}
+            {isSuccess ? (
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <button
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    setSuccessData(null);
+                    navigate('/meus-cadastros');
+                  }}
+                  className="w-full py-3 px-6 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+                >
+                  Enviar documentos
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    setSuccessData(null);
+                    // Limpar todos os dados do formulário e voltar para etapa inicial
+                    limparTodosOsDados();
+                  }}
+                  className="w-full py-3 px-6 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700"
+                >
+                  Novo Cadastro
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  setSuccessData(null);
+                }}
+                className="w-full py-3 px-6 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700"
+              >
+                Tentar Novamente
+              </button>
+            )}
           </div>
         </div>
       </div>
