@@ -443,39 +443,115 @@ const ClientesCadastrados: React.FC = () => {
       setError(null);
       
       const powerBiUrl = env.POWER_BI_URL;
-      
+
       const response = await fetch(powerBiUrl);
       if (!response.ok) {
         throw new Error(`Erro ao buscar dados: ${response.status}`);
       }
       
       const data = await response.json();
+
+      console.log('data', data.length);
+
+      // Informações do usuário para debug
+      const usuarioData = profile?.UsuarioData;
+      const usuarioRole = profile?.role;
       
       // Filtrar dados pelo grupo do usuário E pelo usuário logado
-      const dadosFiltrados = data.filter((cliente: ClientePowerBI) => {
-        const parceiroCliente = cliente.Parceiros;
-        const grupoUsuario = grupoNome;
-        const responsavelCliente = cliente['Responsável (Parceiro)'];
-        const usuarioData = profile?.UsuarioData; // Usar o campo UsuarioData
+      const dadosFiltrados = data.filter((cliente: any) => {
+        // Tentar diferentes variações de nomes de campos (case-insensitive)
+        const encontrarCampo = (chaves: string[], objeto: any): string => {
+          for (const chave of chaves) {
+            // Buscar exato
+            if (objeto[chave] !== undefined && objeto[chave] !== null && objeto[chave] !== '') {
+              return String(objeto[chave]).trim();
+            }
+            // Buscar case-insensitive
+            const chaveLower = chave.toLowerCase();
+            for (const key in objeto) {
+              if (key.toLowerCase() === chaveLower && objeto[key] !== undefined && objeto[key] !== null && objeto[key] !== '') {
+                return String(objeto[key]).trim();
+              }
+            }
+          }
+          return '';
+        };
+        
+        // Tentar encontrar o campo Parceiros com variações
+        const parceiroCliente = encontrarCampo([
+          'Parceiros',
+          'Parceiro',
+          'Grupo',
+          'Parceiro Responsável'
+        ], cliente);
+        
+        // Tentar encontrar o campo Responsável com variações
+        const responsavelCliente = encontrarCampo([
+          'Responsável (Parceiro)',
+          'Responsável',
+          'Responsavel',
+          'Responsável Parceiro',
+          'Parceiro Responsável'
+        ], cliente);
+        
+        const grupoUsuario = (grupoNome || '').trim();
+        const usuarioDataNormalizado = (usuarioData || '').trim();
+        
+        // Se UsuarioData contém o nome do grupo (ex: "Cristhiano NCX"), extrair apenas o nome
+        const nomeUsuario = usuarioDataNormalizado.includes(' ') 
+          ? usuarioDataNormalizado.split(' ').slice(0, -1).join(' ').trim() // Remove última palavra (grupo)
+          : usuarioDataNormalizado;
         
         // Primeiro verificar se o parceiro do cliente corresponde ao grupo do usuário
-        const grupoCorreto = parceiroCliente === grupoUsuario;
+        // Se parceiroCliente estiver vazio, usar lógica alternativa
+        let grupoCorreto = false;
+        if (parceiroCliente) {
+          grupoCorreto = parceiroCliente.toLowerCase() === grupoUsuario.toLowerCase();
+        } else {
+          // Se não tiver parceiro definido, assumir que pode ser do grupo
+          // (campos podem estar vazios mas o cliente ainda pertence ao grupo)
+          grupoCorreto = true;
+        }
         
         // Depois verificar se o usuário logado é o responsável pelo cliente
         // ou se é um coordenador/admin que pode ver todos os clientes do grupo
-        const podeVerCliente = profile?.role === 'admin' || 
-                              profile?.role === 'coordenador' || 
-                              responsavelCliente === usuarioData; // Comparar com UsuarioData
+        let podeVerCliente = false;
+        
+        if (usuarioRole === 'admin' || usuarioRole === 'coordenador') {
+          // Admin e coordenador veem todos os clientes do grupo
+          podeVerCliente = grupoCorreto;
+        } else if (responsavelCliente) {
+          // Usuário comum: verificar se é o responsável
+          podeVerCliente = (
+            responsavelCliente.toLowerCase() === usuarioDataNormalizado.toLowerCase() ||
+            responsavelCliente.toLowerCase() === nomeUsuario.toLowerCase() ||
+            responsavelCliente.toLowerCase().includes(nomeUsuario.toLowerCase()) ||
+            nomeUsuario.toLowerCase().includes(responsavelCliente.toLowerCase())
+          );
+        } else {
+          // Se não tiver responsável definido e for usuário comum, não mostrar
+          podeVerCliente = false;
+        }
+        
+        // Log detalhado para os primeiros clientes (para debug)
+        
+        // Log apenas para clientes que passam no filtro (primeiros 3)
+        if (data.indexOf(cliente) < 3 && grupoCorreto && podeVerCliente) {
+          console.log('✅ Cliente que PASSA no filtro:', {
+            cliente: cliente.Cliente || cliente.cliente,
+            parceiro: parceiroCliente,
+            responsavel: responsavelCliente
+          });
+        }
         
         return grupoCorreto && podeVerCliente;
       });
       
-      
-      
       setClientes(dadosFiltrados);
       setDataLoaded(true); // Marcar que os dados foram carregados com sucesso
-    } catch (error) {
-      setError('Erro ao carregar dados do Power BI. Verifique se o link está corretoa.');
+    } catch (error: any) {
+      console.error('❌ Erro completo ao buscar dados do Power BI:', error);
+      setError(`Erro ao carregar dados do Power BI: ${error.message || 'Erro desconhecido'}. Verifique se o link está correto e se retorna um JSON válido.`);
       // Usar dados de fallback em caso de erro
       setClientes([]);
     } finally {
@@ -982,9 +1058,9 @@ const ClientesCadastrados: React.FC = () => {
                     onChange={(e) => handleFiltroSituacaoChange(e.target.value)}
                     className="px-3 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white text-gray-900"
                   >
-                    <option value="Em aberto">Em Aberto</option>
-                    <option value="Perdida">Perdidos</option>
                     <option value="Todos">Todos</option>
+                    <option value="Perdida">Perdidos</option>
+                    <option value="Em aberto">Em Aberto</option>
                   </select>
                 </div>
               </div>

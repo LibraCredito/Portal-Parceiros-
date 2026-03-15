@@ -9,7 +9,7 @@ Este projeto utiliza uma API do Power BI para obter dados de clientes. A URL da 
 1. **Crie um arquivo `.env.local` na raiz do projeto:**
 ```bash
 # Power BI API URL
-VITE_POWER_BI_URL=https://pbi.ploomes.com/powerbi/callback/a2f85c93108d43cc9005606c63e5771d?code=eddTWbLXzRxcfNlhFnE81GzHC6FWgk9d%2BrLqSwtZfrPlG8KZ9IrkhHN2MFrqqM5H3SpAv8FMHxJUG62XYMBPMgh4xEV7eCq1hwI2xLjtMGAX2Qs5S6bYBsLv6xec1eL8DLtVtzfoBgB%2BieXr6svQEFPlpiOnnqAUqS6rmVGt3l1X2X87qWZZ6sJXXo7PgsFZsYPVzYN97YM8uc1Hez9ZMO8ThryXy5hXkaZ8Fzx4g6rLt6PqON8huT071QNu4xiuJE0l1o7xkT4IkVkCy6qhig%3D%3D
+VITE_POWER_BI_URL=https://pbi.ploomes.com/powerbi/callback/a2f85c93108d43cc9005606c63e5771d?code=eddTWbLXzRxcfNlhFnE81C0N%2BdDx4kxQ3StLCR7NidXFgwDTqPBh%2BSaA5TuoXGseBH9wCirOVnugC6968pZiSGZ771VYu%2FClIQEacpYM8wTqPN2n7dVQ0ZuWNUI8JzqTCH%2BhsQcNT1PNCUDgLglXJoq9P7E4ALpWPBpFI98J1eSifGBjHX5b%2B87MVSaiUs9JnSQv8AOWszF6Mz3Xvwo9sYSplFDaUU1MM8N2SMm%2FqpCUyY3pBNtYAkXxpaTouMnMjqN5pGOl6%2FzbizAfLjGsvw%3D%3D
 ```
 
 2. **Reinicie o servidor de desenvolvimento:**

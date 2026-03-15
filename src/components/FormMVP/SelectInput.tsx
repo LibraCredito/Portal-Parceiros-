@@ -29,8 +29,10 @@ export const SelectInput: React.FC<SelectInputProps> = ({
   onInputChange,
   inputValue,
 }) => {
-  // Transforma as opções para o formato do react-select
-  const selectOptions = options.map(opt => ({ value: String(opt.Id), label: opt.Name }));
+  // Transforma as opções para o formato do react-select (exclui PJ da lista)
+  const selectOptions = options
+    .filter(opt => opt.Name !== "Pessoa Jurídica")
+    .map(opt => ({ value: String(opt.Id), label: opt.Name }));
   const selectedOption = selectOptions.find(opt => String(opt.value) === String(value));
 
   return (

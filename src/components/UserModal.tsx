@@ -473,7 +473,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, user, onSave, on
 
             <div className="space-y-2">
               <Label className="text-sm font-semibold">
-                Grupo {formData.role === 'coordenador' ? '*' : '(opcional)'}
+                Grupo {formData.role === 'coordenador' ? '*' : '(opciosnal)'}
               </Label>
               <Select
                 value={formData.groupId}

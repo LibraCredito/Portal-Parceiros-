@@ -2922,9 +2922,9 @@ const Formulario: React.FC = () => {
                   });
                 }}
                 label="Tipo Pessoa"
-                placeholder="Pessoa Física ou Jurídica"
+                placeholder="Pessoa Física"
                 error={erros.tipoPessoa}
-                tooltip="Selecione se você é uma pessoa física (CPF) ou jurídica (CNPJ)"
+                tooltip="Selecione se você é uma pessoa física (CPF)"
               />
 
               {tomador.tipoPessoa?.Name?.toLowerCase() !== 'pessoa jurídica' && (
