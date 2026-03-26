@@ -2203,11 +2203,6 @@ const Formulario: React.FC = () => {
     const erros: { [key: string]: string } = {};
     const isPessoaJuridica = garantidor.tipoPessoa?.Name?.toLowerCase() === 'pessoa jurídica';
 
-    // Campos sempre obrigatórios
-    if (!isPessoaJuridica) {
-      console.log(`  - Estado Civil: valor="${garantidor.estadoCivil?.Name || '(vazio)'}" | Id=${garantidor.estadoCivil?.Id} | válido=${validarCampoObjeto(garantidor.estadoCivil)}`);
-    }
-    
     if (!validarCampoObjeto(garantidor.tipoPessoa)) {
       erros.tipoPessoa = 'Tipo de pessoa é obrigatório';
     }
