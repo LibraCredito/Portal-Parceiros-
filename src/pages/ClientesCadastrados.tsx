@@ -508,9 +508,9 @@ const ClientesCadastrados: React.FC = () => {
         if (parceiroCliente) {
           grupoCorreto = parceiroCliente.toLowerCase() === grupoUsuario.toLowerCase();
         } else {
-          // Se não tiver parceiro definido, assumir que pode ser do grupo
+          // Se não tiver parceiro definido, O Cliente não irá pertencer então a nenhum grupo // 23/04/2025 Ajuste.
           // (campos podem estar vazios mas o cliente ainda pertence ao grupo)
-          grupoCorreto = true;
+          grupoCorreto = false; 
         }
         
         // Depois verificar se o usuário logado é o responsável pelo cliente
