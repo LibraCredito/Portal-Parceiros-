@@ -5175,64 +5175,151 @@ const Formulario: React.FC = () => {
 
 
 
+  // const renderModalErroRendaMinima = () => {
+  //   if (!mostrarErroRendaMinima) return null;
+
+  //   const rendaTotalAtual = calcularRendaTotalTodosTomadores();
+  //   const rendaTotalNumerica = converterValorMonetario(rendaTotalAtual);
+
+  //   return (
+  //     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  //       <div className="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
+  //         <div className="flex flex-col items-center text-center">
+  //           <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+  //             <span className="text-orange-500 text-2xl font-bold">⚠</span>
+  //           </div>
+  //           <h3 className="text-xl font-bold text-gray-900 mb-2">Critérios de Renda Mínima Não Atendidos</h3>
+  //           <p className="text-gray-600 mb-4">
+  //             Para avançar, cada tomador deve atender a <strong>pelo menos um</strong> dos seguintes critérios:
+  //           </p>
+  //           <div className="bg-blue-50 rounded-lg p-4 mb-4 w-full border border-blue-200">
+  //             <p className="text-sm font-semibold text-blue-800 mb-2">📋 Critérios de Aprovação:</p>
+  //             <ul className="text-left text-blue-700 text-sm space-y-1">
+  //               <li>• <strong>Renda Formal ≥ R$ 5.000</strong> (salário, pró-labore, etc.)</li>
+  //               <li>• <strong>Renda Informal ≥ R$ 7.000</strong> (comércio, serviços, etc.)</li>
+  //               <li>• <strong>OU ambos marcados como "Não se aplica"</strong></li>
+  //             </ul>
+  //           </div>
+            
+  //           <div className="bg-gray-50 rounded-lg p-4 mb-6 w-full">
+  //             <p className="text-sm text-gray-700 mb-2">Status da Validação:</p>
+  //             {(() => {
+  //               const validacao = validarRendaMinima();
+  //               return (
+  //                 <div className="space-y-2">
+  //                   {validacao.detalhes.map((detalhe, idx) => (
+  //                     <div key={idx} className={`text-sm p-2 rounded ${
+  //                       detalhe.includes('Aprovado') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+  //                     }`}>
+  //                       {detalhe}
+  //                     </div>
+  //                   ))}
+  //                 </div>
+  //               );
+  //             })()}
+  //           </div>
+            
+  //           <p className="text-gray-600 mb-6">
+  //             Para continuar, você pode:
+  //           </p>
+  //           <ul className="text-left text-gray-600 mb-6 space-y-2">
+  //             <li>• Aumentar a renda formal para R$ 5.000 ou mais</li>
+  //             <li>• Aumentar a renda informal para R$ 7.000 ou mais</li>
+  //             <li>• Marcar como "Não se aplica" se for o caso</li>
+  //             <li>• Adicionar mais tomadores à operação</li>
+  //           </ul>
+  //           <button
+  //             onClick={() => setMostrarErroRendaMinima(false)}
+  //             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+  //           >
+  //             Entendi
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
   const renderModalErroRendaMinima = () => {
     if (!mostrarErroRendaMinima) return null;
-
-    const rendaTotalAtual = calcularRendaTotalTodosTomadores();
-    const rendaTotalNumerica = converterValorMonetario(rendaTotalAtual);
-
+  
+    const validacao = validarRendaMinima();
+  
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-              <span className="text-orange-500 text-2xl font-bold">⚠</span>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+          
+          <div className="p-5">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 flex-shrink-0 bg-orange-100 rounded-full flex items-center justify-center">
+                <span className="text-orange-500 text-xl font-bold">⚠</span>
+              </div>
+  
+              <div className="text-left">
+                <h3 className="text-lg font-bold text-gray-900">
+                  Renda mínima não atendida
+                </h3>
+  
+                <p className="text-sm text-gray-600 mt-1">
+                  Cada tomador precisa atender a pelo menos um dos critérios abaixo.
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Critérios de Renda Mínima Não Atendidos</h3>
-            <p className="text-gray-600 mb-4">
-              Para avançar, cada tomador deve atender a <strong>pelo menos um</strong> dos seguintes critérios:
-            </p>
-            <div className="bg-blue-50 rounded-lg p-4 mb-4 w-full border border-blue-200">
-              <p className="text-sm font-semibold text-blue-800 mb-2">📋 Critérios de Aprovação:</p>
-              <ul className="text-left text-blue-700 text-sm space-y-1">
-                <li>• <strong>Renda Formal ≥ R$ 5.000</strong> (salário, pró-labore, etc.)</li>
-                <li>• <strong>Renda Informal ≥ R$ 7.000</strong> (comércio, serviços, etc.)</li>
-                <li>• <strong>OU ambos marcados como "Não se aplica"</strong></li>
+  
+            <div className="bg-blue-50 rounded-lg p-3 mb-4 border border-blue-200">
+              <ul className="text-blue-800 text-sm space-y-1">
+                <li>
+                  • Renda formal de <strong>R$ 5.000 ou mais</strong>
+                </li>
+  
+                <li>
+                  • Renda informal de <strong>R$ 7.000 ou mais</strong>
+                </li>
+  
+                <li>
+                  • Ambas marcadas como <strong>“Não se aplica”</strong>
+                </li>
               </ul>
             </div>
-            
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 w-full">
-              <p className="text-sm text-gray-700 mb-2">Status da Validação:</p>
-              {(() => {
-                const validacao = validarRendaMinima();
-                return (
-                  <div className="space-y-2">
-                    {validacao.detalhes.map((detalhe, idx) => (
-                      <div key={idx} className={`text-sm p-2 rounded ${
-                        detalhe.includes('Aprovado') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {detalhe}
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-            
-            <p className="text-gray-600 mb-6">
-              Para continuar, você pode:
+  
+            {validacao.detalhes?.length > 0 && (
+              <div className="space-y-2 mb-4">
+                <p className="text-sm font-medium text-gray-700">
+                  Status dos tomadores:
+                </p>
+  
+                {validacao.detalhes.map((detalhe, idx) => {
+                  const aprovado = detalhe.includes("Aprovado");
+  
+                  return (
+                    <div
+                      key={idx}
+                      className={`text-sm px-3 py-2 rounded ${
+                        aprovado
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {detalhe}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+  
+            <p className="text-sm text-gray-600">
+              Ajuste a renda do tomador ou marque os campos como “Não se aplica”,
+              quando necessário.
             </p>
-            <ul className="text-left text-gray-600 mb-6 space-y-2">
-              <li>• Aumentar a renda formal para R$ 5.000 ou mais</li>
-              <li>• Aumentar a renda informal para R$ 7.000 ou mais</li>
-              <li>• Marcar como "Não se aplica" se for o caso</li>
-              <li>• Adicionar mais tomadores à operação</li>
-            </ul>
+          </div>
+  
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 flex justify-end">
             <button
+              type="button"
               onClick={() => setMostrarErroRendaMinima(false)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Entendi
+              Voltar e corrigir
             </button>
           </div>
         </div>
