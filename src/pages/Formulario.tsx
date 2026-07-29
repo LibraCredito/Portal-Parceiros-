@@ -4,7 +4,7 @@ import { usePloomesOptions, clearExpiredCache, clearAllPloomesCache, getCacheInf
 import { useIBGECities } from '@/hooks/useIBGECities';
 import { useDynamicLTV } from '@/hooks/useDynamicLTV';
 import { TOMADORES_OPTIONS_IDS, QUANTIDADE_GARANTIDORES_OPTIONS_ID, GARANTIDORES_OPTIONS_IDS, GRAU_PARENTESCO_OPTIONS_ID, OPTIONS_GARANTIDORES_IDS } from '@/hooks/ploomesOptionsIds';
-import { SelectInput } from '@/components/FormMVP/SelectInput';
+import { SelectInput, SelectInputPFPJ } from '@/components/FormMVP/SelectInput';
 import { InputText } from '@/components/FormInputs/InputText';
 import { formatadorInput } from '@/components/FormInputs/formatadorInput';
 import { QUANTIDADE_TOMADORES_OPTIONS_ID } from '@/hooks/ploomesOptionsIds';
@@ -4697,6 +4697,7 @@ const Formulario: React.FC = () => {
     const estadoCivilOptions = estadoCivilGarantidoresOptionsArr[idx];
     const tipoPessoaGarantidoresOptions = tipoPessoaOptionsGarantidorArr[idx];
 
+    console.log(tipoPessoaGarantidoresOptions.options)
 
     return (
       <section className={`bg-white rounded-2xl shadow-lg p-8 w-full max-w-5xl flex flex-col items-center justify-center transition-all duration-300 ease-in-out ${
@@ -4708,7 +4709,7 @@ const Formulario: React.FC = () => {
           <fieldset className="border border-blue-200 rounded-xl p-4 mb-2">
             <legend className="text-blue-900 font-semibold px-2">Tipo de Pessoa - Garantidor</legend>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-              <SelectInput
+              <SelectInputPFPJ
                 options={tipoPessoaGarantidoresOptions?.options || []}
                 value={garantidor.tipoPessoa.Id ? String(garantidor.tipoPessoa.Id) : undefined}
                 onChange={opt => {
