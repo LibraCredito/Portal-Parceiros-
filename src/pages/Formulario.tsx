@@ -457,7 +457,6 @@ const Formulario: React.FC = () => {
     loadDocumentsFromIndexedDB();
   }, [quantidade]);
 
-
   // Inicializar documentos de certificado civil quando a quantidade mudar
   useEffect(() => {
     const loadDocumentsFromIndexedDB = async () => {
@@ -555,8 +554,6 @@ const Formulario: React.FC = () => {
 
     loadDocumentsFromIndexedDB();
   }, [quantidade]);
-
-
 
   // Inicializar documentos de holerite e extrato quando a quantidade mudar
   useEffect(() => {
@@ -5174,8 +5171,6 @@ const Formulario: React.FC = () => {
     </div>
   );
 
-
-
   // const renderModalErroRendaMinima = () => {
   //   if (!mostrarErroRendaMinima) return null;
 
@@ -6915,46 +6910,118 @@ ${uploadData.data.erros.length > 0 ? `\n❌ Erros:\n${uploadData.data.erros.map(
 
   // Ajustar renderização principal para incluir fluxo correto
   return (
-    <div className="p-6 min-h-screen">
-      {showGarantidorModal && renderGarantidorModal()}
-      {renderBanner()}
-      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-start justify-center py-16">
-        <div className="flex space-x-8 max-w-7xl w-full px-4">
-          {renderSidebar()}
-          <div className="flex-1 flex flex-col items-center max-w-8xl">
-            {etapa === 0
-              ? renderSelecaoQuantidade()
-              : etapa > 0 && etapa <= (quantidade || 0)
-                ? renderCadastroTomador()
-                : etapa === (quantidade || 0) + 1
-                  ? renderEmprestimo()
-                  : etapa === (quantidade || 0) + 2
-                    ? renderGarantia()
-                    : etapa === (quantidade || 0) + 3 && garantia.garantiaPertenceTomador?.Name === 'Imóvel de terceiro'
-                      ? renderQtdGarantidores()
-                      : etapa >= (quantidade || 0) + 4 && etapa < (quantidade || 0) + 4 + qtdGarantidores && garantia.garantiaPertenceTomador?.Name === 'Imóvel de terceiro'
-                        ? renderGarantidores()
-                        : etapa === (quantidade || 0) + 4 + qtdGarantidores && garantia.garantiaPertenceTomador?.Name === 'Imóvel de terceiro'
-                          ? renderGrauParentesco()
-                          : null}
+    // <div className="p-6 min-h-screen">
+    //   {showGarantidorModal && renderGarantidorModal()}
+    //   {renderBanner()}
+    //   <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-start justify-center py-16">
+    //     <div className="flex space-x-8 max-w-7xl w-full px-4">
+    //       {renderSidebar()}
+    //       <div className="flex-1 flex flex-col items-center max-w-8xl">
+    //         {etapa === 0
+    //           ? renderSelecaoQuantidade()
+    //           : etapa > 0 && etapa <= (quantidade || 0)
+    //             ? renderCadastroTomador()
+    //             : etapa === (quantidade || 0) + 1
+    //               ? renderEmprestimo()
+    //               : etapa === (quantidade || 0) + 2
+    //                 ? renderGarantia()
+    //                 : etapa === (quantidade || 0) + 3 && garantia.garantiaPertenceTomador?.Name === 'Imóvel de terceiro'
+    //                   ? renderQtdGarantidores()
+    //                   : etapa >= (quantidade || 0) + 4 && etapa < (quantidade || 0) + 4 + qtdGarantidores && garantia.garantiaPertenceTomador?.Name === 'Imóvel de terceiro'
+    //                     ? renderGarantidores()
+    //                     : etapa === (quantidade || 0) + 4 + qtdGarantidores && garantia.garantiaPertenceTomador?.Name === 'Imóvel de terceiro'
+    //                       ? renderGrauParentesco()
+    //                       : null}
+    //       </div>
+    //     </div>
+    //     {mostrarErro && renderModalErro()}
+    //     {mostrarErroEmprestimo && renderModalErroEmprestimo()}
+    //     {mostrarErroGarantia && renderModalErroGarantia()}
+    //     {mostrarErroGarantidores && renderModalErroGarantidores()}
+    //     {mostrarErroRendaMinima && renderModalErroRendaMinima()}
+    //     {showModalErroEnvio && renderModalErroEnvio()}
+    //     {showModalLimparDados && renderModalLimparDados()}
+    //     {tomadores[0].tipoPessoa?.Name?.toLowerCase() !== 'pessoa jurídica'  && renderBannerIRPF()}
+    //     {/* Botão de debug fixo no canto inferior direito */}
+    //   </main>
+    //   {/* <TransitionOverlay /> */}
+    //   <LoadingEnvioOverlay />
+    //   {/* <BotaoTesteEnvio /> */}
+    //   {/* <BotaoTesteGoogleDrive /> */}
+    //   {showSuccessModal && renderModalSucesso()}
+    // </div>
+    <div className="min-h-[calc(100vh-70px)] bg-gray-50 flex items-start justify-center px-4 pt-24">
+    <div className="w-full max-w-2xl">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        
+        <div className="h-1.5 bg-yellow-400" />
+
+        <div className="p-8 sm:p-10 text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-50">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-yellow-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.8}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+              />
+            </svg>
           </div>
+
+          <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+            Cadastro de proposta temporariamente indisponível
+          </h2>
+
+          <p className="text-gray-600 text-base leading-relaxed max-w-xl mx-auto">
+            No momento, o envio de propostas e documentos por este portal está
+            temporariamente indisponível.
+          </p>
+
+          <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-5 text-left">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+
+              <div>
+                <p className="font-medium text-gray-900">
+                  Envio de documentos
+                </p>
+
+                <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                  Para dar continuidade ao atendimento, envie toda a
+                  documentação diretamente para o e-mail da Libra Crédito.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p className="mt-6 text-sm text-gray-500">
+            Em caso de dúvidas, entre em contato com o seu responsável comercial.
+          </p>
         </div>
-        {mostrarErro && renderModalErro()}
-        {mostrarErroEmprestimo && renderModalErroEmprestimo()}
-        {mostrarErroGarantia && renderModalErroGarantia()}
-        {mostrarErroGarantidores && renderModalErroGarantidores()}
-        {mostrarErroRendaMinima && renderModalErroRendaMinima()}
-        {showModalErroEnvio && renderModalErroEnvio()}
-        {showModalLimparDados && renderModalLimparDados()}
-        {tomadores[0].tipoPessoa?.Name?.toLowerCase() !== 'pessoa jurídica'  && renderBannerIRPF()}
-        {/* Botão de debug fixo no canto inferior direito */}
-      </main>
-      {/* <TransitionOverlay /> */}
-      <LoadingEnvioOverlay />
-      {/* <BotaoTesteEnvio /> */}
-      {/* <BotaoTesteGoogleDrive /> */}
-      {showSuccessModal && renderModalSucesso()}
+      </div>
     </div>
+  </div>
   );
 };
 
